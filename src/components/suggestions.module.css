@@ -1,0 +1,14 @@
+.suggestionContainer {
+    border: 1px solid var(--color-accent);
+    color: var(--color-text-light);
+    background-color: var(--color-primary);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+    max-height: 100px;
+}
+
+.questionIcon {
+    color: var(--color-text-light);
+}

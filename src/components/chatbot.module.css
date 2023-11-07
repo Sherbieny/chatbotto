@@ -1,0 +1,91 @@
+.dnone {
+    display: none;
+}
+
+.open {
+    display: block;
+    /* This will make sure the chat panel is visible when open */
+}
+
+.chatContainer {
+    height: 80vh;
+    /* Prevent child elements from overflowing */
+    transition: transform 0.13s ease-in-out;
+    /* Smooth transition for opening/closing */
+    transform: translateX(100%);
+    /* Start off-screen to the right */
+    background-color: var(--color-background);
+    color: var(--color-text-dark);
+    border-left: 1px solid var(--color-accent);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    /* Optional: Shadow for visibility */
+    z-index: 1000;
+    /* Ensure it's above other content */
+    overflow: hidden;
+}
+
+
+.chatContainer.open {
+    transform: translateX(0);
+    /* Slide in when open */
+}
+
+.chatPanel {
+    height: 50%;
+
+    /* Set the width of the chat panel */
+    /* Optional: Max width for larger screens */
+
+
+}
+
+.suggestionPanel {
+    height: 30%;
+}
+
+
+.chatMessagesList {
+    overflow-y: auto;
+    flex-grow: 1;
+    height: calc(100% - 60px);
+    bottom: 0;
+}
+
+.inputPanel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px;
+    height: 20%;
+    background-color: var(--color-primary);
+    border-top: 1px solid var(--color-accent);
+}
+
+.chatInput {
+    flex-grow: 1;
+    margin-right: 8px;
+    background-color: var(--color-input-bg);
+    color: var(--color-text-light);
+}
+
+
+/* Add styles for the placeholder text as well */
+.chatInput .MuiInputBase-input::placeholder {
+    color: var(--color-text-light);
+}
+
+/* If you want to change the text color when the TextField is focused */
+.chatInput .Mui-focused {
+    color: var(--color-text-light);
+}
+
+.sendButton {
+    flex-shrink: 0;
+    background-color: var(--color-secondary);
+    color: var(--color-text-light);
+}
+
+.sendButton:hover {
+    background-color: darken(var(--color-secondary), 10%);
+}
