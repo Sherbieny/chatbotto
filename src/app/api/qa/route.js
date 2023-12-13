@@ -1,16 +1,13 @@
+import { getDatabase } from "@/app/lib/mongodb";
 
 export function GET(request) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
 
     switch (action) {
-        case 'getCsvData':
-            // Implementation to get CSV data from the database
-            return new Response('CSV data', { status: 200 });
-            break;
-        case 'getTokenWeights':
+        case 'getAnswers':
             // Implementation to get token weight map data from the database
-            return new Response('Token weights', { status: 200 });
+            return new Response('Answers', { status: 200 });
             break;
         default:
             // Response for unspecified action
@@ -23,10 +20,7 @@ export function POST(request) {
     const action = searchParams.get('action');
 
     switch (action) {
-        case 'saveCsvData':
-            // Implementation to save CSV data into the database
-            break;
-        case 'updateTokenWeights':
+        case 'queryAnswers':
             // Implementation to update token weight map data in the database
             break;
         default:

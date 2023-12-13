@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Box, Button, TextField, Table, TableBody, TableCell, TableHead, TableRow, Paper, TableContainer, TablePagination, Container, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Refresh } from '@mui/icons-material';
 
 export default function AdminPage() {
 
@@ -22,17 +23,92 @@ export default function AdminPage() {
 
     const [file, setFile] = useState(null);
     const [weightMap, setWeightMap] = useState([
-        // Example data
-        { key: 'A-c', value: 1.0, label: 'Adjective-Common', labelJP: '形容詞' },
-        // Add more weights
-        { key: 'A-dp', value: 0.0, label: 'Adjective-Dependent', labelJP: '形容詞-非自立可能' },
+        { key: 'A-c', value: 0, label: 'Adjective-Common', labelJP: '形容詞' },
+        { key: 'A-dp', value: 0, label: 'Adjective-Dependent', labelJP: '形容詞-非自立可能' },
+        { key: 'C', value: 0, label: 'Conjunction', labelJP: '接続詞' },
+        { key: 'D', value: 0, label: 'Pronoun', labelJP: '代名詞' },
+        { key: 'E', value: 2, label: 'English word', labelJP: '英単語' },
+        { key: 'F', value: 0, label: 'Adverb', labelJP: '副詞' },
+        { key: 'I-c', value: 0, label: 'Interjection-Common', labelJP: '感動詞-一般' },
+        { key: 'J-c', value: 0, label: 'Adjectival Noun-Common', labelJP: '形状詞-一般' },
+        { key: 'J-tari', value: 0, label: 'Adjectival Noun-Tari', labelJP: '形状詞-タリ' },
+        { key: 'J-xs', value: 0, label: 'Adjectival Noun-AuxVerb stem', labelJP: '形状詞-助動詞語幹' },
+        { key: 'M-aa', value: 0, label: 'Auxiliary sign-AA', labelJP: '補助記号-AA' },
+        { key: 'M-c', value: 0, label: 'Auxiliary sign-Common', labelJP: '補助記号-一般' },
+        { key: 'M-cp', value: 0, label: 'Auxiliary sign-Open Parenthesis', labelJP: '補助記号-括弧閉' },
+        { key: 'M-op', value: 0, label: 'Auxiliary sign-Close Parenthesis', labelJP: '補助記号-括弧開' },
+        { key: 'M-p', value: 0, label: 'Auxiliary sign-Period', labelJP: '補助記号-句点' },
+        { key: 'N-n', value: 3, label: 'Noun-Noun', labelJP: '名詞-名詞的' },
+        { key: 'N-nc', value: 3, label: 'Noun-Common Noun', labelJP: '名詞-普通名詞' },
+        { key: 'N-pn', value: 3, label: 'Noun-Proper Noun', labelJP: '名詞-固有名詞' },
+        { key: 'N-xs', value: 0, label: 'Noun-AuxVerb stem', labelJP: '名詞-助動詞語幹' },
+        { key: 'O', value: 0, label: 'Others', labelJP: 'その他' },
+        { key: 'P', value: 0, label: 'Prefix', labelJP: '接頭辞' },
+        { key: 'P-fj', value: 0, label: 'Particle-Adverbial', labelJP: '助詞-副助詞' },
+        { key: 'P-jj', value: 0, label: 'Particle-Phrasal', labelJP: '助詞-準体助詞' },
+        { key: 'P-k', value: 0, label: 'Particle-Case Marking', labelJP: '助詞-格助詞' },
+        { key: 'P-rj', value: 0, label: 'Particle-Binding', labelJP: '助詞-係助詞' },
+        { key: 'P-sj', value: 0, label: 'Particle-Conjunctive', labelJP: '助詞-接続助詞' },
+        { key: 'Q-a', value: 0, label: 'Suffix-Adjective', labelJP: '接尾辞-形容詞的' },
+        { key: 'Q-j', value: 0, label: 'Suffix-Adjectival Noun', labelJP: '接尾辞-形状詞的' },
+        { key: 'Q-n', value: 0, label: 'Suffix-Noun', labelJP: '接尾辞-名詞的' },
+        { key: 'Q-v', value: 0, label: 'Suffix-Verb', labelJP: '接尾辞-動詞的' },
+        { key: 'R', value: 0, label: 'Adnominal adjective', labelJP: '連体詞' },
+        { key: 'S-c', value: 0, label: 'Sign-Common', labelJP: '記号-一般' },
+        { key: 'S-l', value: 0, label: 'Sign-Letter', labelJP: '記号-文字' },
+        { key: 'U', value: 0, label: 'URL', labelJP: 'URL' },
+        { key: 'V-c', value: 2, label: 'Verb-Common', labelJP: '動詞-一般' },
+        { key: 'V-dp', value: 0, label: 'Verb-Dependent', labelJP: '動詞-非自立可能' },
+        { key: 'W', value: 0, label: 'Whitespace', labelJP: '空白' },
+        { key: 'X', value: 0, label: 'AuxVerb', labelJP: '助動詞' }
     ]);
 
     const handleFileChange = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile) {
-            setFile(uploadedFile);
-        }
+            //TODO: Implement file upload logic
+            // Read the file content
+            // covert json file content to qa data
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const fileContent = event.target.result;
+                processJsonFile(fileContent);
+            }
+
+            reader.readAsText(uploadedFile);
+        };
+    };
+
+    const processJsonFile = (fileContent) => {
+        const jsonData = JSON.parse(fileContent);
+        const qaData = [];
+
+        // Process the json data
+        jsonData.data.forEach((item) => {
+            item.paragraphs.forEach((paragraph) => {
+                paragraph.qas.forEach((qa) => {
+                    qaData.push({
+                        prompt: qa.question,
+                        answer: qa.answers[0].text,
+                    });
+                });
+            });
+        });
+
+        downloadProcessedData(qaData);
+    };
+
+    const downloadProcessedData = (qaData) => {
+        const fileName = 'qa_data.json';
+        const json = JSON.stringify(qaData);
+        const blob = new Blob([json], { type: 'application/json' });
+        const href = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = href;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const handleWeightChange = (key, event) => {
@@ -44,10 +120,16 @@ export default function AdminPage() {
         );
     };
 
-    // Function to handle file upload to the server
-    const handleFileUpload = () => {
-        // TODO: Implement file upload logic
+    const handleRefreshClick = async () => {
+        try {
+            const response = await fetch('/api/weights?action=getTokenWeights');
+            const data = await response.json();
+            setWeightMap(data);
+        } catch (err) {
+            console.log(err);
+        }
     };
+
 
     // Function to handle weight map save to the server
     const handleSaveWeights = () => {
@@ -75,11 +157,16 @@ export default function AdminPage() {
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button component="label" variant="contained" onClick={handleFileUpload} startIcon={<CloudUploadIcon />}>
-                    CSVのアップロード
-                    <VisuallyHiddenInput type="file" accept='.csv' onChange={handleFileChange} />
+                <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
+                    JSONのアップロード
+                    <VisuallyHiddenInput type="file" accept='.json' onChange={handleFileChange} />
+                </Button>
+                <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
+                <Button component="label" variant="contained" onClick={handleRefreshClick} startIcon={<Refresh />}>
+                    リフレッシュする
                 </Button>
             </Box>
+
 
             <Divider sx={{ mt: 2, mb: 2 }}></Divider>
 
