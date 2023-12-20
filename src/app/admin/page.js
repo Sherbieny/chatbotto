@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Box, Button, TextField, Table, TableBody, TableCell, TableHead, TableRow, Paper, TableContainer, TablePagination, Container, Divider, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Button, TextField, Table, TableBody, TableCell, TableHead, TableRow, Paper, TableContainer, TablePagination, Container, Divider, Typography, Snackbar, Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Refresh } from '@mui/icons-material';
@@ -21,48 +21,90 @@ export default function AdminPage() {
         setPage(0);
     };
 
-    const [file, setFile] = useState(null);
-    const [weightMap, setWeightMap] = useState([
-        { key: 'A-c', value: 0, label: 'Adjective-Common', labelJP: '形容詞' },
-        { key: 'A-dp', value: 0, label: 'Adjective-Dependent', labelJP: '形容詞-非自立可能' },
-        { key: 'C', value: 0, label: 'Conjunction', labelJP: '接続詞' },
-        { key: 'D', value: 0, label: 'Pronoun', labelJP: '代名詞' },
-        { key: 'E', value: 2, label: 'English word', labelJP: '英単語' },
-        { key: 'F', value: 0, label: 'Adverb', labelJP: '副詞' },
-        { key: 'I-c', value: 0, label: 'Interjection-Common', labelJP: '感動詞-一般' },
-        { key: 'J-c', value: 0, label: 'Adjectival Noun-Common', labelJP: '形状詞-一般' },
-        { key: 'J-tari', value: 0, label: 'Adjectival Noun-Tari', labelJP: '形状詞-タリ' },
-        { key: 'J-xs', value: 0, label: 'Adjectival Noun-AuxVerb stem', labelJP: '形状詞-助動詞語幹' },
-        { key: 'M-aa', value: 0, label: 'Auxiliary sign-AA', labelJP: '補助記号-AA' },
-        { key: 'M-c', value: 0, label: 'Auxiliary sign-Common', labelJP: '補助記号-一般' },
-        { key: 'M-cp', value: 0, label: 'Auxiliary sign-Open Parenthesis', labelJP: '補助記号-括弧閉' },
-        { key: 'M-op', value: 0, label: 'Auxiliary sign-Close Parenthesis', labelJP: '補助記号-括弧開' },
-        { key: 'M-p', value: 0, label: 'Auxiliary sign-Period', labelJP: '補助記号-句点' },
-        { key: 'N-n', value: 3, label: 'Noun-Noun', labelJP: '名詞-名詞的' },
-        { key: 'N-nc', value: 3, label: 'Noun-Common Noun', labelJP: '名詞-普通名詞' },
-        { key: 'N-pn', value: 3, label: 'Noun-Proper Noun', labelJP: '名詞-固有名詞' },
-        { key: 'N-xs', value: 0, label: 'Noun-AuxVerb stem', labelJP: '名詞-助動詞語幹' },
-        { key: 'O', value: 0, label: 'Others', labelJP: 'その他' },
-        { key: 'P', value: 0, label: 'Prefix', labelJP: '接頭辞' },
-        { key: 'P-fj', value: 0, label: 'Particle-Adverbial', labelJP: '助詞-副助詞' },
-        { key: 'P-jj', value: 0, label: 'Particle-Phrasal', labelJP: '助詞-準体助詞' },
-        { key: 'P-k', value: 0, label: 'Particle-Case Marking', labelJP: '助詞-格助詞' },
-        { key: 'P-rj', value: 0, label: 'Particle-Binding', labelJP: '助詞-係助詞' },
-        { key: 'P-sj', value: 0, label: 'Particle-Conjunctive', labelJP: '助詞-接続助詞' },
-        { key: 'Q-a', value: 0, label: 'Suffix-Adjective', labelJP: '接尾辞-形容詞的' },
-        { key: 'Q-j', value: 0, label: 'Suffix-Adjectival Noun', labelJP: '接尾辞-形状詞的' },
-        { key: 'Q-n', value: 0, label: 'Suffix-Noun', labelJP: '接尾辞-名詞的' },
-        { key: 'Q-v', value: 0, label: 'Suffix-Verb', labelJP: '接尾辞-動詞的' },
-        { key: 'R', value: 0, label: 'Adnominal adjective', labelJP: '連体詞' },
-        { key: 'S-c', value: 0, label: 'Sign-Common', labelJP: '記号-一般' },
-        { key: 'S-l', value: 0, label: 'Sign-Letter', labelJP: '記号-文字' },
-        { key: 'U', value: 0, label: 'URL', labelJP: 'URL' },
-        { key: 'V-c', value: 2, label: 'Verb-Common', labelJP: '動詞-一般' },
-        { key: 'V-dp', value: 0, label: 'Verb-Dependent', labelJP: '動詞-非自立可能' },
-        { key: 'W', value: 0, label: 'Whitespace', labelJP: '空白' },
-        { key: 'X', value: 0, label: 'AuxVerb', labelJP: '助動詞' }
-    ]);
 
+    const [file, setFile] = useState(null);
+
+    // Weight Map
+    const [weightMap, setWeightMap] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/weights?action=getTokenWeights');
+                const data = await response.json();
+                setWeightMap(data);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleWeightChange = (key, event) => {
+        const updatedWeight = event.target.value;
+        setWeightMap((prevWeightMap) =>
+            prevWeightMap.map((weight) =>
+                weight.key === key ? { ...weight, value: updatedWeight } : weight
+            )
+        );
+    };
+
+    const handleRefreshClick = async () => {
+        try {
+            const response = await fetch('/api/weights?action=getTokenWeights');
+            const data = await response.json();
+            setWeightMap(data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
+    // Function to handle weight map save to the db
+    const handleSaveWeights = () => {
+        const saveWeights = async () => {
+            try {
+                const response = await fetch('/api/weights?action=updateTokenWeights', {
+                    method: 'POST',
+                    body: JSON.stringify(weightMap),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const jsonResponse = await response.json();
+                console.log(jsonResponse);
+
+                if (jsonResponse.success) {
+                    setSeverity('success');
+                    setMessage('Weights saved successfully');
+                    setOpen(true);
+                } else {
+                    setSeverity('error');
+                    setMessage('Error saving weights');
+                    setOpen(true);
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+        };
+        saveWeights();
+    };
+
+    // Snackbar
+    const [open, setOpen] = useState(false);
+    const [severity, setSeverity] = useState('success');
+    const [message, setMessage] = useState('');
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
+
+    // TEMP file upload logic
     const handleFileChange = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile) {
@@ -111,31 +153,6 @@ export default function AdminPage() {
         document.body.removeChild(link);
     };
 
-    const handleWeightChange = (key, event) => {
-        const updatedWeight = event.target.value;
-        setWeightMap((prevWeightMap) =>
-            prevWeightMap.map((weight) =>
-                weight.key === key ? { ...weight, value: updatedWeight } : weight
-            )
-        );
-    };
-
-    const handleRefreshClick = async () => {
-        try {
-            const response = await fetch('/api/weights?action=getTokenWeights');
-            const data = await response.json();
-            setWeightMap(data);
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
-
-    // Function to handle weight map save to the server
-    const handleSaveWeights = () => {
-        // TODO: Implement save weights logic
-    };
-
     const VisuallyHiddenInput = styled('input')({
         clip: 'rect(0 0 0 0)',
         clipPath: 'inset(50%)',
@@ -150,6 +167,12 @@ export default function AdminPage() {
 
     return (
         <Container maxWidth="xl">
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+                    {message}
+                </Alert>
+            </Snackbar>
+
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Typography variant="h1" gutterBottom>
                     管理

@@ -1,11 +1,17 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
 let uri = '';
+let tls = true;
 
 if (process.env.NODE_ENV === 'development') {
     uri = process.env.DEV_MONGODB_TEST_URI;
 } else if (process.env.NODE_ENV === 'production') {
     uri = process.env.PROD_MONGODB_URI;
+}
+
+if (process.env.USE_LOCAL_DB === 'true') {
+    uri = process.env.LOCAL_MONGODB_URI;
+    tls = false;
 }
 
 if (!uri) {
@@ -24,7 +30,7 @@ async function connectToDatabase() {
                     version: ServerApiVersion.v1,
                     strict: true,
                     deprecationErrors: true,
-                    tls: false
+                    tls: tls
                 }
             });
             global._mongoClientPromise = client.connect();

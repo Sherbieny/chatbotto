@@ -13,6 +13,36 @@ async function getTokenWeights() {
 
 }
 
+async function updateTokenWeights(weightMap) {
+
+    try {
+        const db = await getDatabase();
+        const collection = await db.collection('weights');
+
+        const operations = weightMap.map((weight) => {
+            return {
+                updateOne: {
+                    filter: { key: weight.key },
+                    update: { $set: { value: weight.value } },
+                    upsert: true
+                }
+            };
+        });
+
+        const result = await collection.bulkWrite(operations);
+
+        if (result.result.ok === 1) {
+            return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        } else {
+            return new Response(JSON.stringify({ success: false }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        }
+    }
+    catch (err) {
+        return new Response(err, { status: 500 });
+    }
+
+}
+
 export function GET(request) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
@@ -21,7 +51,6 @@ export function GET(request) {
         case 'getTokenWeights':
             // Implementation to get token weight map data from the database
             return getTokenWeights();
-            break;
         default:
             // Response for unspecified action
             return new Response('Action not found', { status: 400 });
@@ -31,11 +60,12 @@ export function GET(request) {
 export function POST(request) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
+    const weightMap = request.body;
 
     switch (action) {
         case 'updateTokenWeights':
             // Implementation to update token weight map data in the database
-            break;
+            return updateTokenWeights(weightMap);
         default:
             // Response for unspecified action
             return new Response('Action not found', { status: 400 });
