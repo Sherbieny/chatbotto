@@ -13,7 +13,6 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.17",
-    "mongodb": "^6.3.0",
     "next": "14.0.1",
     "rakutenma": "^1.0.0",
     "react": "^18",
