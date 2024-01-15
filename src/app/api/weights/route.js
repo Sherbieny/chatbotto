@@ -57,10 +57,20 @@ export function GET(request) {
     }
 }
 
-export function POST(request) {
+export async function POST(request) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
-    const weightMap = request.body;
+
+    // Convert the ReadableStream to text
+    const text = await new Response(request.body).text();
+
+    // Parse the text as JSON
+    let weightMap;
+    try {
+        weightMap = JSON.parse(text);
+    } catch (err) {
+        return new Response('Invalid JSON', { status: 400 });
+    }
 
     switch (action) {
         case 'updateTokenWeights':
