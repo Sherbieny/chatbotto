@@ -1,16 +1,25 @@
-import { getDatabase } from "@/app/lib/mongodb";
+import Finder from '../../lib/finder';
+import { weightsUpdated } from '../weights/route';
 
-export function GET(request) {
+let finder = new Finder();
+
+weightsUpdated.on('weightsUpdated', () => {
+    finder = new Finder();
+});
+
+export async function GET(request) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
+    const query = searchParams.get('query');
 
     switch (action) {
-        case 'getAnswers':
-            // Implementation to get token weight map data from the database
-            return new Response('Answers', { status: 200 });
-            break;
+        case 'getSuggestions':
+            const suggestions = await finder.getSuggestions(query);
+            return new Response(JSON.stringify(suggestions), { status: 200 });
+        case 'findBestMatch':
+            const bestMatch = await finder.findBestMatches(query);
+            return new Response(JSON.stringify(bestMatch), { status: 200 });
         default:
-            // Response for unspecified action
             return new Response('Action not found', { status: 400 });
     }
 }
@@ -24,7 +33,6 @@ export function POST(request) {
             // Implementation to update token weight map data in the database
             break;
         default:
-            // Response for unspecified action
             return new Response('Action not found', { status: 400 });
     }
 }

@@ -1,4 +1,5 @@
 import { getDatabase } from "@/app/lib/mongodb";
+import { EventEmitter } from "events";
 
 async function getTokenWeights() {
 
@@ -12,6 +13,8 @@ async function getTokenWeights() {
     }
 
 }
+
+export const weightsUpdated = new EventEmitter();
 
 async function updateTokenWeights(weightMap) {
 
@@ -32,6 +35,7 @@ async function updateTokenWeights(weightMap) {
         const result = await collection.bulkWrite(operations);
 
         if (result.result.ok === 1) {
+            weightsUpdated.emit('weightsUpdated');
             return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         } else {
             return new Response(JSON.stringify({ success: false }), { status: 500, headers: { 'Content-Type': 'application/json' } });

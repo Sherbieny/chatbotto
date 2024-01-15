@@ -16,16 +16,44 @@ import {
     Stack
 } from '@mui/material';
 import Suggestions from './suggestions';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 
 export default function ChatWindow() {
     const [isOpen, setIsOpen] = useState(false);
+    const [userInput, setUserInput] = useState('');
+    const [chatHistory, setChatHistory] = useState([]);
+
     const toggleChat = () => {
         setIsOpen(!isOpen);
         const chatPanel = document.querySelector('#chatContainer');
         chatPanel.classList.toggle('open');
     };
+
+    const handleInputChange = (event) => {
+        setUserInput(event.target.value);
+    };
+
+    const handleSendClick = async () => {
+        const response = await fetch('/api/qa?action=findBestMatch&query=' + encodeURIComponent(userInput));
+        const data = await response.json();
+
+        setChatHistory([...chatHistory, { user: 'bot', text: data }]);
+        setUserInput('');
+    };
+
+    useEffect(() => {
+        if (userInput.length > 0) {
+            const fetchSuggestions = async () => {
+                const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(userInput));
+                const data = await response.json();
+
+                // Do something with the suggestions
+            };
+
+            fetchSuggestions();
+        }
+    }, [userInput]);
 
     return (
         <Box>
@@ -64,8 +92,10 @@ export default function ChatWindow() {
                             InputProps={{ // Add this prop to style the input text color
                                 className: styles.chatInput
                             }}
+                            value={userInput}
+                            onChange={handleInputChange}
                         />
-                        <Button variant="contained" className={styles.sendButton}>
+                        <Button variant="contained" className={styles.sendButton} onClick={handleSendClick}>
                             Send
                         </Button>
                     </Stack>
