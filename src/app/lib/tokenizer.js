@@ -1,8 +1,14 @@
-import RakutenMA from 'rakutenma';
-
 class Tokenizer {
     constructor() {
-        this.rakutenma = new RakutenMA(require('rakutenma/model_ja'));
+        this.init();
+    }
+
+    async init() {
+        const response = await fetch('/path/to/model_ja.min.json');
+        const model = await response.json();
+        this.rakutenma = new RakutenMA(model);
+        this.rakutenma.featset = RakutenMA.default_featset_ja;
+        this.rakutenma.hash_func = RakutenMA.create_hash_func(15);
     }
 
     tokenize(text) {
