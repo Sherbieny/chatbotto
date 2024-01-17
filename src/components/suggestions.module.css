@@ -3,13 +3,36 @@
     color: #333;
     background-color: #f8f8f8;
     overflow-y: auto;
-    max-height: 100px;
+    height: 25%;
     /* Increase the max height */
     margin-bottom: 1%;
     border-radius: 10px;
     /* Add border radius */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     /* Add box shadow */
+}
+
+.suggestionsList {
+    list-style-type: none;
+    padding: 0;
+    margin: -5px !important;
+}
+
+.suggestionsHeader {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.suggestionsPanel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 20%;
+    height: 100vh;
+    overflow: auto;
+    background-color: #f8f8f8;
+    border-left: 1px solid #ccc;
+    padding: 20px;
 }
 
 .questionIcon {

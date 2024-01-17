@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Table, TableBody, TableCell, TableHead, TableRow, Paper, TableContainer, TablePagination, Container, Divider, Typography, Snackbar, Alert } from '@mui/material';
+import { Link, Box, Button, TextField, Table, TableBody, TableCell, TableHead, TableRow, Paper, TableContainer, TablePagination, Container, Divider, Typography, Snackbar, Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Refresh } from '@mui/icons-material';
 
 export default function AdminPage() {
@@ -180,6 +181,12 @@ export default function AdminPage() {
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Link href="/">
+                    <Button component="label" variant="contained" startIcon={<ArrowBackIcon />}>
+                        戻る
+                    </Button>
+                </Link>
+                <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
                     JSONのアップロード
                     <VisuallyHiddenInput type="file" accept='.json' onChange={handleFileChange} />
@@ -239,7 +246,7 @@ export default function AdminPage() {
                 </Paper>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Button variant="contained" onClick={handleSaveWeights}>
-                        Save Weights
+                        保存する
                     </Button>
                 </Box>
             </Box>

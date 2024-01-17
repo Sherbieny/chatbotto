@@ -8,18 +8,31 @@
 }
 
 .chatStack {
-    height: 60vh;
+    height: 72vh;
     overflow: auto;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #f8f8f8;
+    display: flex;
+    flex-direction: column;
+}
+
+.suggestionsPoppedOut .chatMessagesList {
+    max-height: 100%;
+    /* Adjust as needed */
+}
+
+.inputField {
+    flex-shrink: 0;
+    /* Prevent the input field from shrinking */
 }
 
 .chatMessagesList {
     flex-grow: 1;
     overflow: auto;
     margin-bottom: 10px;
+    max-height: 60%;
 }
 
 .chatInput {

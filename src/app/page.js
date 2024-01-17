@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ChatWindow from '@/components/chatbotWindow';
 import Script from 'next/script';
+import SettingsIcon from '@mui/icons-material/Settings';
+import IconButton from '@mui/material/IconButton';
 
 export default function Home() {
     return (
@@ -12,9 +14,11 @@ export default function Home() {
             <Script src="/rakutenma/model_ja.js" />
             <div className={styles.linkImageWrapper}>
                 <Link href="/admin" className={styles.adminButton}>
-                    <Image src="/images/admin_icon_1.png" alt="Chatbot" width={40} height={40} />
+                    <IconButton>
+                        <SettingsIcon />
+                    </IconButton>
                 </Link>
-                <Image src="/images/chatbot_icon_1.png" alt="Chatbot" width={200} height={200} />
+                <Image src="/images/chatbot_icon_1.png" alt="Chatbot" width={100} height={100} />
             </div>
             <h1>チャットボット!</h1>
             <ChatWindow />

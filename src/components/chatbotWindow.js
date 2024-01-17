@@ -14,7 +14,8 @@ import {
     Button,
     Container,
     Stack,
-    CircularProgress
+    CircularProgress,
+    Backdrop
 } from '@mui/material';
 import Suggestions from './suggestions';
 import { useState, useEffect, useRef } from 'react';
@@ -37,6 +38,7 @@ export default function ChatWindow() {
     const getBestAnswer = async (message) => {
         if (!tokenizer) return;
 
+        setIsLoading(true);
         const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(message));
         let answer = 'その質問に対する答えはわかりません。';
         if (tokenizedInput.length > 0) {
@@ -47,6 +49,7 @@ export default function ChatWindow() {
 
         setChatHistory(prevChatHistory => [...prevChatHistory, { user: 'user', text: message }, { user: 'bot', text: answer }]);
         setUserInput('');
+        setIsLoading(false);
     };
 
     // Modify handleSendClick to call getBestAnswer with userInput
@@ -64,7 +67,7 @@ export default function ChatWindow() {
         if (userInput.length > 0) {
             const fetchSuggestions = async () => {
                 if (!tokenizer) return;
-
+                setIsLoading(true);
                 const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
                 if (tokenizedInput.length === 0) return setSuggestions([]);
 
@@ -74,6 +77,7 @@ export default function ChatWindow() {
 
                 setSuggestions([...filteredQA]);
                 setHasSuggestions(filteredQA.length > 0);
+                setIsLoading(false);
             };
 
             fetchSuggestions();
@@ -99,7 +103,7 @@ export default function ChatWindow() {
 
     return (
         <Container id='chatContainer' maxWidth="sm" className={styles.chatContainer}>
-            <Stack className={styles.chatStack}>
+            <Stack className={`${styles.chatStack} ${hasSuggestions ? styles.suggestionsPoppedOut : ''}`}>
                 {/* Chat panel */}
                 <List className={styles.chatMessagesList}>
                     {chatHistory.map((message, index) => (
@@ -114,7 +118,7 @@ export default function ChatWindow() {
                     ))}
                 </List>
                 {/* Input field */}
-                <Stack direction="row" spacing={0.5} className={hasSuggestions ? styles.inputFieldUp : ''}>
+                <Stack direction="row" spacing={0.5} className={styles.inputField}>
                     <TextField
                         className={styles.chatInput}
                         fullWidth
@@ -138,6 +142,9 @@ export default function ChatWindow() {
                 {/* Suggestions panel */}
                 <Suggestions suggestions={suggestions} onSuggestionClick={handleSuggestClick} />
             </Stack>
+            <Backdrop open={isLoading} style={{ color: '#fff', zIndex: 1 }}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </Container>
     );
 }
