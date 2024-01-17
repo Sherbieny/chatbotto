@@ -6,6 +6,7 @@ import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Refresh } from '@mui/icons-material';
+import Image from 'next/image';
 
 export default function AdminPage() {
 
@@ -55,6 +56,10 @@ export default function AdminPage() {
             const response = await fetch('/api/weights?action=getTokenWeights');
             const data = await response.json();
             setWeightMap(data);
+
+            setMessage('ウェイトの更新に成功しました');
+            setSeverity('success');
+            setOpen(true);
         } catch (err) {
             console.log(err);
         }
@@ -77,11 +82,11 @@ export default function AdminPage() {
 
                 if (jsonResponse.success) {
                     setSeverity('success');
-                    setMessage('Weights saved successfully');
+                    setMessage('ウェイトが正常に保存されました');
                     setOpen(true);
                 } else {
                     setSeverity('error');
-                    setMessage('Error saving weights');
+                    setMessage('ウェイトの保存中にエラーが発生しました');
                     setOpen(true);
                 }
 
@@ -174,8 +179,9 @@ export default function AdminPage() {
                 </Alert>
             </Snackbar>
 
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Typography variant="h1" gutterBottom>
+            <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+                <Image src="/images/admin_icon_1.png" alt="Chatbot" width={150} height={150} />
+                <Typography variant="h4" gutterBottom>
                     管理
                 </Typography>
             </Box>
