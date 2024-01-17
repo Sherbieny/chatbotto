@@ -10,15 +10,15 @@ weightsUpdated.on('weightsUpdated', () => {
 export async function GET(request) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
-    const query = searchParams.get('query');
+    const tokenizedInput = JSON.parse(searchParams.get('query'));
 
     switch (action) {
         case 'getSuggestions':
-            const suggestions = await finder.getSuggestions(query);
+            let suggestions = await finder.getSuggestions(tokenizedInput);
             return new Response(JSON.stringify(suggestions), { status: 200 });
         case 'findBestMatch':
-            const bestMatch = await finder.findBestMatches(query);
-            return new Response(JSON.stringify(bestMatch), { status: 200 });
+            let bestMatches = await finder.getSuggestions(tokenizedInput);
+            return new Response(JSON.stringify(bestMatches), { status: 200 });
         default:
             return new Response('Action not found', { status: 400 });
     }

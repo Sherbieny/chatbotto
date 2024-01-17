@@ -13,16 +13,21 @@ import {
     TextField,
     Button,
     Container,
-    Stack
+    Stack,
+    CircularProgress
 } from '@mui/material';
 import Suggestions from './suggestions';
 import { useState, useEffect } from 'react';
+import Tokenizer from '../../src/app/lib/tokenizer';
 
 
 export default function ChatWindow() {
     const [isOpen, setIsOpen] = useState(false);
     const [userInput, setUserInput] = useState('');
-    const [chatHistory, setChatHistory] = useState([]);
+    const [chatHistory, setChatHistory] = useState([{ user: 'bot', text: 'Hello! How can I help you today?' }]);
+    const [tokenizer, setTokenizer] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [suggestions, setSuggestions] = useState([]);
 
     const toggleChat = () => {
         setIsOpen(!isOpen);
@@ -34,26 +39,62 @@ export default function ChatWindow() {
         setUserInput(event.target.value);
     };
 
-    const handleSendClick = async () => {
-        const response = await fetch('/api/qa?action=findBestMatch&query=' + encodeURIComponent(userInput));
-        const data = await response.json();
+    const getBestAnswer = async (message) => {
+        if (!tokenizer) return;
 
-        setChatHistory([...chatHistory, { user: 'bot', text: data }]);
+        const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(message));
+        if (tokenizedInput.length === 0) return;
+
+        const response = await fetch('/api/qa?action=findBestMatch&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
+        const data = await response.json();
+        const answer = await tokenizer.findBestMatch(data, tokenizedInput)
+
+        setChatHistory(prevChatHistory => [...prevChatHistory, { user: 'user', text: message }, { user: 'bot', text: answer }]);
+        setUserInput('');
+    };
+
+    // Modify handleSendClick to call getBestAnswer with userInput
+    const handleSendClick = () => {
+        getBestAnswer(userInput);
+    };
+
+    // Modify handleSuggestClick to call sendMessage with the clicked suggestion
+    const handleSuggestClick = (suggestion) => {
+        setChatHistory(prevChatHistory => [...prevChatHistory, { user: 'user', text: suggestion.prompt }, { user: 'bot', text: suggestion.answer }]);
         setUserInput('');
     };
 
     useEffect(() => {
         if (userInput.length > 0) {
             const fetchSuggestions = async () => {
-                const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(userInput));
-                const data = await response.json();
+                if (!tokenizer) return;
 
-                // Do something with the suggestions
+                const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
+                if (tokenizedInput.length === 0) return setSuggestions([]);
+
+                const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
+                const data = await response.json();
+                const filteredQA = await tokenizer.filterSuggestions(data, tokenizedInput)
+
+                setSuggestions([...filteredQA]);
             };
 
             fetchSuggestions();
         }
-    }, [userInput]);
+
+        if (!tokenizer) {
+            const initTokenizer = async () => {
+                setIsLoading(true);
+                const myTokenizer = new Tokenizer();
+                await myTokenizer.init();
+                setTokenizer(myTokenizer);
+                setIsLoading(false);
+            };
+
+            initTokenizer();
+        }
+
+    }, [userInput, tokenizer]);
 
     return (
         <Box>
@@ -62,26 +103,27 @@ export default function ChatWindow() {
                 color="primary"
                 className={styles.chatButton}
                 onClick={toggleChat}
+                disabled={isLoading}
             >
-                Chat with us
+                {isLoading ? <CircularProgress size={24} /> : 'Chat with us'}
             </Button>
             <Container id='chatContainer' maxWidth="sm" className={isOpen ? `${styles.open} ${styles.chatContainer}` : styles.dnone}>
                 <Stack className={styles.chatStack}>
                     {/* Chat panel */}
                     <List className={styles.chatMessagesList}>
-                        {/* Example message from the chatbot */}
-                        <ListItem>
-                            <ListItemAvatar>
-                                <Avatar>
-                                    <Image src="/images/chatbot_icon_1.png" alt="Chatbot" width={40} height={40} />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText primary="Hello! How can I help you today?" />
-                        </ListItem>
-                        {/* Add more <ListItem> components for additional messages */}
+                        {chatHistory.map((message, index) => (
+                            <ListItem key={index}>
+                                <ListItemAvatar>
+                                    <Avatar>
+                                        <Image src={message.user === 'bot' ? "/images/chatbot_icon_1.png" : "/images/user_icon2.png"} alt={message.user} width={40} height={40} />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={message.text} />
+                            </ListItem>
+                        ))}
                     </List>
                     {/* Suggestions panel */}
-                    <Suggestions />
+                    <Suggestions suggestions={suggestions} onSuggestionClick={handleSuggestClick} />
                     {/* Input field */}
                     <Stack direction="row" spacing={0.5}>
                         <TextField
@@ -95,7 +137,12 @@ export default function ChatWindow() {
                             value={userInput}
                             onChange={handleInputChange}
                         />
-                        <Button variant="contained" className={styles.sendButton} onClick={handleSendClick}>
+                        <Button
+                            variant="contained"
+                            className={styles.sendButton}
+                            onClick={handleSendClick}
+                            disabled={isLoading}
+                        >
                             Send
                         </Button>
                     </Stack>

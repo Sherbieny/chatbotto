@@ -21,8 +21,13 @@ if (!uri) {
 }
 
 let client = null;
+let db = null;
 
 async function connectToDatabase() {
+    if (db) {
+        return db;
+    }
+    console.log('Connecting to database');
     if (process.env.NODE_ENV === 'development') {
         if (!global._mongoClientPromise) {
             client = new MongoClient(uri, {
@@ -37,11 +42,13 @@ async function connectToDatabase() {
         }
 
         client = await global._mongoClientPromise;
+        db = client.db();
 
-        return client;
+        return db;
     } else {
         if (client && client.isConnected()) {
-            return client;
+            db = client.db();
+            return db;
         }
 
         client = await MongoClient.connect(uri, {
@@ -51,16 +58,17 @@ async function connectToDatabase() {
                 deprecationErrors: true
             }
         });
-        return client;
+
+        db = client.db();
+        return db;
     }
 }
 
 export async function getDatabase() {
     try {
-        const client = await connectToDatabase();
-        await client.db('admin').command({ ping: 1 });
-        console.log('Connected to database');
-        return client.db();
+        const db = await connectToDatabase();
+        await db.command({ ping: 1 });
+        return db;
     } catch (err) {
         console.log(err);
     }
