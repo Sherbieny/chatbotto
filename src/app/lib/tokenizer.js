@@ -65,7 +65,7 @@ class Tokenizer {
     }
 
     async findBestMatch(prompts, tokenizedInput) {
-        if (prompts.length === 0) return prompts;
+        if (prompts.length === 0) return 'その質問に対する答えはわかりません。';
 
         const tokenizedPrompts = prompts.map(prompt => ({
             ...prompt,

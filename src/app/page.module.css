@@ -1,17 +1,26 @@
 /* src/styles/Home.module.css */
 .main {
-    text-align: left;
-    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 50%;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 0 1rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
 }
 
-.chatButton {
-    /* Style your button */
-    margin-top: 20px;
-    /* Example style */
+.linkImageWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .adminButton {
-    position: absolute;
-    top: 10%;
-    left: 15%;
+    border: 1px solid #000;
 }

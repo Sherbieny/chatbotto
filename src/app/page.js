@@ -10,13 +10,14 @@ export default function Home() {
             <Script src="/rakutenma/rakutenma.js" />
             <Script src="/rakutenma/hanzenkaku.js" />
             <Script src="/rakutenma/model_ja.js" />
-            <Image src="/images/chatbot_icon_1.png" alt="Chatbot" width={200} height={200} />
+            <div className={styles.linkImageWrapper}>
+                <Link href="/admin" className={styles.adminButton}>
+                    <Image src="/images/admin_icon_1.png" alt="Chatbot" width={40} height={40} />
+                </Link>
+                <Image src="/images/chatbot_icon_1.png" alt="Chatbot" width={200} height={200} />
+            </div>
             <h1>チャットボット!</h1>
-            <p>Click the button below to chat with our bot.</p>
             <ChatWindow />
-            <Link href="/admin" className={styles.adminButton}>
-                <Image src="/images/admin_icon_1.png" alt="Chatbot" width={40} height={40} />
-            </Link>
         </main>
     );
 }

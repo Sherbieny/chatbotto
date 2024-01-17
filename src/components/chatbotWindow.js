@@ -17,23 +17,18 @@ import {
     CircularProgress
 } from '@mui/material';
 import Suggestions from './suggestions';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Tokenizer from '../../src/app/lib/tokenizer';
 
 
 export default function ChatWindow() {
-    const [isOpen, setIsOpen] = useState(false);
     const [userInput, setUserInput] = useState('');
-    const [chatHistory, setChatHistory] = useState([{ user: 'bot', text: 'Hello! How can I help you today?' }]);
+    const [chatHistory, setChatHistory] = useState([{ user: 'bot', text: 'こんにちは！本日はどのようにお手伝いできますか？' }]);
     const [tokenizer, setTokenizer] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
-
-    const toggleChat = () => {
-        setIsOpen(!isOpen);
-        const chatPanel = document.querySelector('#chatContainer');
-        chatPanel.classList.toggle('open');
-    };
+    const [hasSuggestions, setHasSuggestions] = useState(false);
+    const lastMessageRef = useRef(null);
 
     const handleInputChange = (event) => {
         setUserInput(event.target.value);
@@ -43,11 +38,12 @@ export default function ChatWindow() {
         if (!tokenizer) return;
 
         const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(message));
-        if (tokenizedInput.length === 0) return;
-
-        const response = await fetch('/api/qa?action=findBestMatch&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
-        const data = await response.json();
-        const answer = await tokenizer.findBestMatch(data, tokenizedInput)
+        let answer = 'その質問に対する答えはわかりません。';
+        if (tokenizedInput.length > 0) {
+            const response = await fetch('/api/qa?action=findBestMatch&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
+            const data = await response.json();
+            answer = await tokenizer.findBestMatch(data, tokenizedInput)
+        }
 
         setChatHistory(prevChatHistory => [...prevChatHistory, { user: 'user', text: message }, { user: 'bot', text: answer }]);
         setUserInput('');
@@ -77,6 +73,7 @@ export default function ChatWindow() {
                 const filteredQA = await tokenizer.filterSuggestions(data, tokenizedInput)
 
                 setSuggestions([...filteredQA]);
+                setHasSuggestions(filteredQA.length > 0);
             };
 
             fetchSuggestions();
@@ -94,60 +91,53 @@ export default function ChatWindow() {
             initTokenizer();
         }
 
-    }, [userInput, tokenizer]);
+        if (lastMessageRef.current) {
+            lastMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+        }
+
+    }, [userInput, tokenizer, chatHistory]);
 
     return (
-        <Box>
-            <Button
-                variant="contained"
-                color="primary"
-                className={styles.chatButton}
-                onClick={toggleChat}
-                disabled={isLoading}
-            >
-                {isLoading ? <CircularProgress size={24} /> : 'Chat with us'}
-            </Button>
-            <Container id='chatContainer' maxWidth="sm" className={isOpen ? `${styles.open} ${styles.chatContainer}` : styles.dnone}>
-                <Stack className={styles.chatStack}>
-                    {/* Chat panel */}
-                    <List className={styles.chatMessagesList}>
-                        {chatHistory.map((message, index) => (
-                            <ListItem key={index}>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <Image src={message.user === 'bot' ? "/images/chatbot_icon_1.png" : "/images/user_icon2.png"} alt={message.user} width={40} height={40} />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText primary={message.text} />
-                            </ListItem>
-                        ))}
-                    </List>
-                    {/* Suggestions panel */}
-                    <Suggestions suggestions={suggestions} onSuggestionClick={handleSuggestClick} />
-                    {/* Input field */}
-                    <Stack direction="row" spacing={0.5}>
-                        <TextField
-                            className={styles.chatInput}
-                            fullWidth
-                            placeholder="Type your message..."
-                            variant="outlined"
-                            InputProps={{ // Add this prop to style the input text color
-                                className: styles.chatInput
-                            }}
-                            value={userInput}
-                            onChange={handleInputChange}
-                        />
-                        <Button
-                            variant="contained"
-                            className={styles.sendButton}
-                            onClick={handleSendClick}
-                            disabled={isLoading}
-                        >
-                            Send
-                        </Button>
-                    </Stack>
+        <Container id='chatContainer' maxWidth="sm" className={styles.chatContainer}>
+            <Stack className={styles.chatStack}>
+                {/* Chat panel */}
+                <List className={styles.chatMessagesList}>
+                    {chatHistory.map((message, index) => (
+                        <ListItem key={index} ref={index === chatHistory.length - 1 ? lastMessageRef : null}>
+                            <ListItemAvatar>
+                                <Avatar>
+                                    <Image src={message.user === 'bot' ? "/images/chatbot_icon_1.png" : "/images/user_icon2.png"} alt={message.user} width={40} height={40} />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={message.text} />
+                        </ListItem>
+                    ))}
+                </List>
+                {/* Input field */}
+                <Stack direction="row" spacing={0.5} className={hasSuggestions ? styles.inputFieldUp : ''}>
+                    <TextField
+                        className={styles.chatInput}
+                        fullWidth
+                        placeholder="メッセージを入力してください..."
+                        variant="outlined"
+                        InputProps={{ // Add this prop to style the input text color
+                            className: styles.chatInput
+                        }}
+                        value={userInput}
+                        onChange={handleInputChange}
+                    />
+                    <Button
+                        variant="contained"
+                        className={styles.sendButton}
+                        onClick={handleSendClick}
+                        disabled={isLoading}
+                    >
+                        送信
+                    </Button>
                 </Stack>
-            </Container>
-        </Box>
+                {/* Suggestions panel */}
+                <Suggestions suggestions={suggestions} onSuggestionClick={handleSuggestClick} />
+            </Stack>
+        </Container>
     );
 }
