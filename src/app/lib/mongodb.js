@@ -27,7 +27,7 @@ async function connectToDatabase() {
     if (db) {
         return db;
     }
-    console.log('Connecting to database');
+    //console.log('Connecting to database');
     if (process.env.NODE_ENV === 'development') {
         if (!global._mongoClientPromise) {
             client = new MongoClient(uri, {
@@ -42,12 +42,12 @@ async function connectToDatabase() {
         }
 
         client = await global._mongoClientPromise;
-        db = client.db();
+        db = client.db('chatbotto');
 
         return db;
     } else {
         if (client && client.isConnected()) {
-            db = client.db();
+            db = client.db('chatbotto');
             return db;
         }
 
@@ -59,7 +59,7 @@ async function connectToDatabase() {
             }
         });
 
-        db = client.db();
+        db = client.db('chatbotto');
         return db;
     }
 }
