@@ -1,3 +1,76 @@
+# チャットボット
+
+## 説明
+
+このプロジェクトは、Nextjs と Nodejs で構築されたルールベースのチャットボットアプリケーションです。日本語の形態素解析に[RakutenMA](https://github.com/rakuten-nlp/rakutenma)ライブラリを使用し、ユーザーとの対話のためのチャットインターフェースを提供します。アプリケーションには、ユーザーの入力の各単語の重要性を決定するために使用される`Weights`データを管理するための管理ページも含まれています。
+
+## インストール
+
+1. リポジトリをクローンします。
+   ```bash
+   git clone <repository-url>
+   ```
+2. 依存関係をインストールします。
+   ```bash
+    npm install
+   ```
+3. `.env.local.tmp`を`.env.local`に名前を変更し、環境変数を入力します。
+
+4. ローカルで MongoDB のデータベースを作成するか、MongoDB Atlas などのクラウドデータベースサービスを使用します。
+   1. `chatbotto`という名前のデータベースと`weights`という名前のコレクションを作成します。
+   2. `qa`という名前のコレクションを作成します。
+   3. [オプション] `sample_data`の json ファイルを使用して、サンプルデータでデータベースを作成します。
+
+## アプリケーションの実行
+
+開発モードでアプリケーションを実行するには、次のコマンドを使用します。
+
+```bash
+npm run dev
+```
+
+本番モードでアプリケーションをビルドして実行するには、次のコマンドを使用します。
+
+```bash
+npm run build
+npm start
+```
+
+## Docker
+
+このプロジェクトには、Docker コンテナでアプリケーションを実行するための Dockerfile と docker-compose.yml ファイルが含まれています。Docker コンテナをビルドして実行するには、次のコマンドを使用します。
+
+```bash
+docker-compose build
+docker-compose up
+```
+
+## 機能
+
+- ユーザーとの対話のためのチャットインターフェース
+- RakutenMA ライブラリを使用した形態素解析
+- アプリケーションを管理するための管理ページ
+- ユーザーの入力の各単語の重要性を決定するための重みデータ
+- qa データは[JaQuAD](https://huggingface.co/SkelterLabsInc/bert-base-japanese-jaquad)データセットに基づいています
+
+## ツールとテクノロジー
+
+- [Nextjs](https://nextjs.org/)
+- [Nodejs](https://nodejs.org/en/)
+- [RakutenMA](https://github.com/rakuten-nlp/rakutenma)
+- [MongoDB](https://www.mongodb.com/)
+- [VS Code](https://code.visualstudio.com/)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Material UI](https://material-ui.com/)
+- [React](https://reactjs.org/)
+- [Github Copilot](https://copilot.github.com/)
+- [Github Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
+
+## 貢献
+
+貢献は歓迎します。プルリクエストを送信するか、変更内容を議論するための問題を作成してください。
+
 # Chatbotto
 
 ## Description
@@ -52,6 +125,20 @@ docker-compose up
 - Admin page for managing the application
 - Weights data for determining the importance of each word in the user's input
 - qa data is based on [JaQuAD](https://huggingface.co/SkelterLabsInc/bert-base-japanese-jaquad) dataset
+
+## Tools and Technologies
+
+- [Nextjs](https://nextjs.org/)
+- [Nodejs](https://nodejs.org/en/)
+- [RakutenMA](https://github.com/rakuten-nlp/rakutenma)
+- [MongoDB](https://www.mongodb.com/)
+- [VS Code](https://code.visualstudio.com/)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Material UI](https://material-ui.com/)
+- [React](https://reactjs.org/)
+- [Github Copilot](https://copilot.github.com/)
+- [Github Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
 
 ## Contributing
 
