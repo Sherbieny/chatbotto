@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Chatbotto
 
-## Getting Started
+## Description
 
-First, run the development server:
+This project is a rule-based chatbot application built with Nextjs, and Nodejs. It uses the [RakutenMA](https://github.com/rakuten-nlp/rakutenma) library for morphological analysis of Japanese language and provides a chat interface for user interaction. The application also includes an admin page for managing the application's `Weights` data that is used to determine the importance of each word in the user's input.
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Install the dependencies:
+   ```bash
+   npm install
+   ```
+3. Rename `.env.local.tmp` to `.env.local` and fill in your environment variables.
+
+4. Create a database locally in MongoDB or use a cloud database service such as MongoDB Atlas.
+   1. Create a database named `chatbotto` and a collection named `weights`.
+   2. Create a collection named `qa`
+   3. [Optional] use the json files in `sample_data` to populate the database with sample data.
+
+## Running the Application
+
+To run the application in development mode, use the following command:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+To build and run the application in production mode, use the following commands:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Docker
 
-## Learn More
+This project includes a Dockerfile and a docker-compose.yml file for running the application in a Docker container. To build and run the Docker container, use the following commands:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+docker-compose build
+docker-compose up
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Chat interface for user interaction
+- Morphological analysis using the RakutenMA library
+- Admin page for managing the application
+- Weights data for determining the importance of each word in the user's input
+- qa data is based on [JaQuAD](https://huggingface.co/SkelterLabsInc/bert-base-japanese-jaquad) dataset
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Contributions are welcome. Please submit a pull request or create an issue to discuss the changes you want to make.
