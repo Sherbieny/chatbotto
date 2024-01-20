@@ -4,6 +4,16 @@
 
 このプロジェクトは、Nextjs と Nodejs で構築されたルールベースのチャットボットアプリケーションです。日本語の形態素解析に[RakutenMA](https://github.com/rakuten-nlp/rakutenma)ライブラリを使用し、ユーザーとの対話のためのチャットインターフェースを提供します。アプリケーションには、ユーザーの入力の各単語の重要性を決定するために使用される`Weights`データを管理するための管理ページも含まれています。
 
+## スクリーンショット
+
+アプリケーションのスクリーンショットをいくつか紹介します。
+
+ホームページ:
+![Home Page](https://github.com/Sherbieny/chatbotto/blob/main/sample_data/screenshots/home.png)
+
+管理ページ:
+![Admin Page](https://github.com/Sherbieny/chatbotto/blob/main/sample_data/screenshots/admin.png)
+
 ## インストール
 
 1. リポジトリをクローンします。
@@ -76,6 +86,16 @@ docker-compose up
 ## Description
 
 This project is a rule-based chatbot application built with Nextjs, and Nodejs. It uses the [RakutenMA](https://github.com/rakuten-nlp/rakutenma) library for morphological analysis of Japanese language and provides a chat interface for user interaction. The application also includes an admin page for managing the application's `Weights` data that is used to determine the importance of each word in the user's input.
+
+## Screenshots
+
+Here are some screenshots of the application:
+
+Home Page:
+![Home Page](https://github.com/Sherbieny/chatbotto/blob/main/sample_data/screenshots/home.png)
+
+Admin Page:
+![Admin Page](https://github.com/Sherbieny/chatbotto/blob/main/sample_data/screenshots/admin.png)
 
 ## Installation
 
