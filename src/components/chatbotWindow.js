@@ -3,8 +3,6 @@
 import styles from './chatbot.module.css';
 import Image from 'next/image';
 import {
-    Box,
-    Grid,
     List,
     ListItem,
     ListItemText,
@@ -15,7 +13,8 @@ import {
     Container,
     Stack,
     CircularProgress,
-    Backdrop
+    Snackbar,
+    Alert
 } from '@mui/material';
 import Suggestions from './suggestions';
 import { useState, useEffect, useRef } from 'react';
@@ -30,6 +29,19 @@ export default function ChatWindow() {
     const [suggestions, setSuggestions] = useState([]);
     const [hasSuggestions, setHasSuggestions] = useState(false);
     const lastMessageRef = useRef(null);
+
+    // Snackbar
+    const [open, setOpen] = useState(false);
+    const [severity, setSeverity] = useState('success');
+    const [message, setMessage] = useState('');
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
 
     const handleInputChange = (event) => {
         setUserInput(event.target.value);
@@ -64,16 +76,36 @@ export default function ChatWindow() {
     };
 
     useEffect(() => {
-        if (userInput.length > 0) {
+        if (userInput.length > 3) {
             const fetchSuggestions = async () => {
                 if (!tokenizer) return;
                 setIsLoading(true);
                 const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
-                if (tokenizedInput.length === 0) return setSuggestions([]);
+                if (tokenizedInput.length === 0) {
+                    setHasSuggestions(false);
+                    setIsLoading(false);
+
+                    setSeverity('error');
+                    setMessage('入力されたテキストにトークンが含まれていません');
+                    setOpen(true);
+
+                    return setSuggestions([]);
+                }
 
                 const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
                 const data = await response.json();
                 const filteredQA = await tokenizer.filterSuggestions(data, tokenizedInput)
+
+                if (filteredQA.length === 0) {
+                    setHasSuggestions(false);
+                    setIsLoading(false);
+
+                    setSeverity('error');
+                    setMessage('入力されたテキストにトークンが含まれていません');
+                    setOpen(true);
+
+                    return setSuggestions([]);
+                }
 
                 setSuggestions([...filteredQA]);
                 setHasSuggestions(filteredQA.length > 0);
@@ -103,6 +135,12 @@ export default function ChatWindow() {
 
     return (
         <Container id='chatContainer' maxWidth="sm" className={styles.chatContainer}>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+                    {message}
+                </Alert>
+            </Snackbar>
+
             <Stack className={`${styles.chatStack} ${hasSuggestions ? styles.suggestionsPoppedOut : ''}`}>
                 {/* Chat panel */}
                 <List className={styles.chatMessagesList}>
@@ -142,9 +180,9 @@ export default function ChatWindow() {
                 {/* Suggestions panel */}
                 <Suggestions suggestions={suggestions} onSuggestionClick={handleSuggestClick} />
             </Stack>
-            <Backdrop open={isLoading} style={{ color: '#fff', zIndex: 1 }}>
-                <CircularProgress color="inherit" />
-            </Backdrop>
+            <div style={{ position: 'fixed', bottom: '50%', right: '50%', zIndex: 1 }}>
+                {isLoading && <CircularProgress color="inherit" />}
+            </div>
         </Container>
     );
 }
