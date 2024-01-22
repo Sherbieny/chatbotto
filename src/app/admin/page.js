@@ -23,9 +23,6 @@ export default function AdminPage() {
         setPage(0);
     };
 
-
-    const [file, setFile] = useState(null);
-
     // Weight Map
     const [weightMap, setWeightMap] = useState([]);
 
@@ -78,7 +75,6 @@ export default function AdminPage() {
                     }
                 });
                 const jsonResponse = await response.json();
-                console.log(jsonResponse);
 
                 if (jsonResponse.success) {
                     setSeverity('success');
@@ -110,40 +106,34 @@ export default function AdminPage() {
         setOpen(false);
     };
 
-    // TEMP file upload logic
     const handleFileChange = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile) {
-            //TODO: Implement file upload logic
-            // Read the file content
-            // covert json file content to qa data
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
                 const fileContent = event.target.result;
-                processJsonFile(fileContent);
+                const response = await fetch('/api/qa?action=processJaquadData', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: fileContent,
+                });
+
+                if (!response.ok) {
+                    setSeverity('error');
+                    setMessage('データの処理中にエラーが発生しました');
+                    setOpen(true);
+                    return;
+                }
+
+                // The processed data is now in the response
+                const qaData = await response.json();
+                downloadProcessedData(qaData);
             }
 
             reader.readAsText(uploadedFile);
         };
-    };
-
-    const processJsonFile = (fileContent) => {
-        const jsonData = JSON.parse(fileContent);
-        const qaData = [];
-
-        // Process the json data
-        jsonData.data.forEach((item) => {
-            item.paragraphs.forEach((paragraph) => {
-                paragraph.qas.forEach((qa) => {
-                    qaData.push({
-                        prompt: qa.question,
-                        answer: qa.answers[0].text,
-                    });
-                });
-            });
-        });
-
-        downloadProcessedData(qaData);
     };
 
     const downloadProcessedData = (qaData) => {
@@ -194,7 +184,7 @@ export default function AdminPage() {
                 </Link>
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
                 <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
-                    JSONのアップロード
+                    JaQuAD データセット（JSON）を処理す
                     <VisuallyHiddenInput type="file" accept='.json' onChange={handleFileChange} />
                 </Button>
                 <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
