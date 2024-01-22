@@ -79,37 +79,46 @@ export default function ChatWindow() {
         if (userInput.length > 3) {
             const fetchSuggestions = async () => {
                 if (!tokenizer) return;
-                setIsLoading(true);
-                const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
-                if (tokenizedInput.length === 0) {
+                try {
+                    setIsLoading(true);
+                    const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
+                    if (tokenizedInput.length === 0) {
+                        setHasSuggestions(false);
+                        setIsLoading(false);
+
+                        setSeverity('error');
+                        setMessage('入力されたテキストにトークンが含まれていません');
+                        setOpen(true);
+
+                        return setSuggestions([]);
+                    }
+
+                    const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
+                    const data = await response.json();
+                    const filteredQA = await tokenizer.filterSuggestions(data, tokenizedInput)
+
+                    if (filteredQA.length === 0) {
+                        setHasSuggestions(false);
+                        setIsLoading(false);
+
+                        setSeverity('error');
+                        setMessage('入力されたテキストにトークンが含まれていません');
+                        setOpen(true);
+
+                        return setSuggestions([]);
+                    }
+
+                    setSuggestions([...filteredQA]);
+                    setHasSuggestions(filteredQA.length > 0);
+                    setIsLoading(false);
+                } catch (err) {
+                    console.log(err);
                     setHasSuggestions(false);
                     setIsLoading(false);
-
                     setSeverity('error');
                     setMessage('入力されたテキストにトークンが含まれていません');
                     setOpen(true);
-
-                    return setSuggestions([]);
                 }
-
-                const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
-                const data = await response.json();
-                const filteredQA = await tokenizer.filterSuggestions(data, tokenizedInput)
-
-                if (filteredQA.length === 0) {
-                    setHasSuggestions(false);
-                    setIsLoading(false);
-
-                    setSeverity('error');
-                    setMessage('入力されたテキストにトークンが含まれていません');
-                    setOpen(true);
-
-                    return setSuggestions([]);
-                }
-
-                setSuggestions([...filteredQA]);
-                setHasSuggestions(filteredQA.length > 0);
-                setIsLoading(false);
             };
 
             fetchSuggestions();
