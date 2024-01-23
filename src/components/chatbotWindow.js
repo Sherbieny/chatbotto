@@ -157,7 +157,7 @@ export default function ChatWindow() {
                         <ListItem key={index} ref={index === chatHistory.length - 1 ? lastMessageRef : null}>
                             <ListItemAvatar>
                                 <Avatar>
-                                    <Image src={message.user === 'bot' ? "/images/chatbot_icon_1.png" : "/images/user_icon2.png"} alt={message.user} width={40} height={40} />
+                                    <Image src={message.user === 'bot' ? "/images/chatbot_icon_1.png" : "/images/user_icon2.png"} alt={message.user} width={40} height={40} priority />
                                 </Avatar>
                             </ListItemAvatar>
                             <ListItemText primary={message.text} />

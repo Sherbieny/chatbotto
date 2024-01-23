@@ -240,7 +240,7 @@ export default function AdminPage() {
             </Snackbar>
 
             <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-                <Image src="/images/admin_icon_1.png" alt="Chatbot" width={150} height={150} />
+                <Image src="/images/admin_icon_1.png" alt="Chatbot" width={150} height={150} priority />
                 <Typography variant="h4" gutterBottom>
                     管理
                 </Typography>

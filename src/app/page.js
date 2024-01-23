@@ -18,7 +18,7 @@ export default function Home() {
                         <SettingsIcon />
                     </IconButton>
                 </Link>
-                <Image src="/images/chatbot_icon_1.png" alt="Chatbot" width={100} height={100} />
+                <Image src="/images/chatbot_icon_1.png" alt="Chatbot" width={100} height={100} priority />
             </div>
             <h1>チャットボット!</h1>
             <ChatWindow />
