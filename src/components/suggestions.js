@@ -25,7 +25,7 @@ export default function Suggestions({ suggestions, onSuggestionClick }) {
             </div>
             <List className={Styles.suggestionsList}>
                 {suggestions.map((suggestion, index) => (
-                    <ListItem key={index} button onClick={() => onSuggestionClick(suggestion)}>
+                    <ListItem className={Styles.suggestionsListItem} key={index} button onClick={() => onSuggestionClick(suggestion)}>
                         <ListItemIcon>
                             <PsychologyAltIcon className={Styles.questionIcon} />
                         </ListItemIcon>
