@@ -16,6 +16,11 @@ class Tokenizer {
         this.weightsMap.forEach(item => {
             this.weights[item.key] = item.value;
         });
+
+        this.suggestionsCount = await fetch('/api/settings?action=getSettings').then(res => res.json()).then(settings => {
+            const suggestionsCountSetting = settings.find(setting => setting.key === 'suggestionsCount');
+            return suggestionsCountSetting.value || 5;
+        });
     }
 
     tokenize(text) {
@@ -59,7 +64,7 @@ class Tokenizer {
         rankedPrompts.sort((a, b) => b.score - a.score);
 
         // Return the top 5 suggestions
-        const suggestions = rankedPrompts.slice(0, 5).map(prompt => ({ prompt: prompt.prompt, answer: prompt.answer }));
+        const suggestions = rankedPrompts.slice(0, this.suggestionsCount).map(prompt => ({ prompt: prompt.prompt, answer: prompt.answer }));
 
         return suggestions;
     }
