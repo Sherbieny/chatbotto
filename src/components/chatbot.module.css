@@ -29,14 +29,12 @@
 }
 
 .chatMessagesList {
-    flex-grow: 1;
     overflow: auto;
     margin-bottom: 10px;
-    max-height: 60%;
+    height: 60%;
 }
 
 .chatInput {
-    flex-grow: 1;
     margin-right: 10px;
     margin-top: 2%;
 }

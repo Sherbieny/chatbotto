@@ -3,7 +3,7 @@
     color: #333;
     background-color: #f8f8f8;
     overflow-y: auto;
-    height: 25%;
+    height: 30%;
     /* Increase the max height */
     margin-bottom: 1%;
     border-radius: 10px;
@@ -16,11 +16,7 @@
     list-style-type: none;
     padding: 0;
     margin: -5px !important;
-}
-
-.suggestionsListItem {
-    z-index: 2;
-    position: relative;
+    overflow: auto;
 }
 
 .suggestionsHeader {

@@ -171,9 +171,6 @@ export default function ChatWindow() {
                         fullWidth
                         placeholder="メッセージを入力してください..."
                         variant="outlined"
-                        InputProps={{ // Add this prop to style the input text color
-                            className: styles.chatInput
-                        }}
                         value={userInput}
                         onChange={handleInputChange}
                     />
