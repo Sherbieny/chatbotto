@@ -17,8 +17,9 @@ import {
     Alert
 } from '@mui/material';
 import Suggestions from './suggestions';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Tokenizer from '../../src/app/lib/tokenizer';
+import { debounce } from 'lodash';
 
 
 export default function ChatWindow() {
@@ -45,6 +46,7 @@ export default function ChatWindow() {
 
     const handleInputChange = (event) => {
         setUserInput(event.target.value);
+        debouncedFetchSuggestions(tokenizer, event.target.value);
     };
 
     const getBestAnswer = async (message) => {
@@ -75,55 +77,100 @@ export default function ChatWindow() {
         setUserInput('');
     };
 
-    useEffect(() => {
-        if (userInput.length > 3) {
-            const fetchSuggestions = async () => {
-                if (!tokenizer) return;
-                try {
-                    setIsLoading(true);
-                    const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
-                    if (tokenizedInput.length === 0) {
-                        setHasSuggestions(false);
-                        setIsLoading(false);
+    const fetchSuggestions = useCallback(async (tokenizer, userInput) => {
+        if (!tokenizer || userInput.length <= 3) return;
+        try {
+            console.log('Fetching suggestions...');
+            setIsLoading(true);
+            const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
+            if (tokenizedInput.length === 0) {
+                setHasSuggestions(false);
+                setIsLoading(false);
 
-                        setSeverity('error');
-                        setMessage('入力されたテキストにトークンが含まれていません');
-                        setOpen(true);
+                setSeverity('error');
+                setMessage('入力されたテキストにトークンが含まれていません');
+                setOpen(true);
 
-                        return setSuggestions([]);
-                    }
+                return setSuggestions([]);
+            }
 
-                    const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
-                    const data = await response.json();
-                    const filteredQA = await tokenizer.filterSuggestions(data, tokenizedInput)
+            const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
+            const data = await response.json();
+            const filteredQA = await tokenizer.filterSuggestions(data, tokenizedInput)
 
-                    if (filteredQA.length === 0) {
-                        setHasSuggestions(false);
-                        setIsLoading(false);
+            if (filteredQA.length === 0) {
+                setHasSuggestions(false);
+                setIsLoading(false);
 
-                        setSeverity('error');
-                        setMessage('入力されたテキストにトークンが含まれていません');
-                        setOpen(true);
+                setSeverity('error');
+                setMessage('入力されたテキストにトークンが含まれていません');
+                setOpen(true);
 
-                        return setSuggestions([]);
-                    }
+                return setSuggestions([]);
+            }
 
-                    setSuggestions([...filteredQA]);
-                    setHasSuggestions(filteredQA.length > 0);
-                    setIsLoading(false);
-                } catch (err) {
-                    console.log(err);
+            setSuggestions([...filteredQA]);
+            setHasSuggestions(filteredQA.length > 0);
+            setIsLoading(false);
+        } catch (err) {
+            console.log(err);
+            setHasSuggestions(false);
+            setIsLoading(false);
+            setSeverity('error');
+            setMessage('入力されたテキストにトークンが含まれていません');
+            setOpen(true);
+        }
+    }, []);
+
+    const debouncedFetchSuggestions = useCallback(
+        debounce(async (tokenizer, userInput) => {
+            if (!tokenizer || userInput.length <= 3) return;
+            try {
+                console.log('Fetching suggestions...');
+                setIsLoading(true);
+                const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
+                if (tokenizedInput.length === 0) {
                     setHasSuggestions(false);
                     setIsLoading(false);
+
                     setSeverity('error');
                     setMessage('入力されたテキストにトークンが含まれていません');
                     setOpen(true);
+
+                    return setSuggestions([]);
                 }
-            };
 
-            fetchSuggestions();
-        }
+                const response = await fetch('/api/qa?action=getSuggestions&query=' + encodeURIComponent(JSON.stringify(tokenizedInput)));
+                const data = await response.json();
+                const filteredQA = await tokenizer.filterSuggestions(data, tokenizedInput)
 
+                if (filteredQA.length === 0) {
+                    setHasSuggestions(false);
+                    setIsLoading(false);
+
+                    setSeverity('error');
+                    setMessage('入力されたテキストにトークンが含まれていません');
+                    setOpen(true);
+
+                    return setSuggestions([]);
+                }
+
+                setSuggestions([...filteredQA]);
+                setHasSuggestions(filteredQA.length > 0);
+                setIsLoading(false);
+            } catch (err) {
+                console.log(err);
+                setHasSuggestions(false);
+                setIsLoading(false);
+                setSeverity('error');
+                setMessage('入力されたテキストにトークンが含まれていません');
+                setOpen(true);
+            }
+        }, 3000),
+        [] // delay in ms
+    );
+
+    useEffect(() => {
         if (!tokenizer) {
             const initTokenizer = async () => {
                 setIsLoading(true);
