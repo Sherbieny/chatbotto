@@ -4,15 +4,9 @@
 
 このプロジェクトは、Nextjs と Nodejs で構築されたルールベースのチャットボットアプリケーションです。日本語の形態素解析に[RakutenMA](https://github.com/rakuten-nlp/rakutenma)ライブラリを使用し、ユーザーとの対話のためのチャットインターフェースを提供します。アプリケーションには、ユーザーの入力の各単語の重要性を決定するために使用される`Weights`データを管理するための管理ページも含まれています。
 
-## スクリーンショット
+## デモ
 
-アプリケーションのスクリーンショットをいくつか紹介します。
-
-ホームページ:
-![Home Page](https://github.com/Sherbieny/chatbotto/blob/main/sample_data/screenshots/home.png)
-
-管理ページ:
-![Admin Page](https://github.com/Sherbieny/chatbotto/blob/main/sample_data/screenshots/admin.png)
+[Chatbotto on Vercel](https://chatbotto.vercel.app/)
 
 ## インストール
 
@@ -71,6 +65,7 @@ docker-compose up
 - [Nodejs](https://nodejs.org/en/)
 - [RakutenMA](https://github.com/rakuten-nlp/rakutenma)
 - [MongoDB](https://www.mongodb.com/)
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 - [VS Code](https://code.visualstudio.com/)
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
@@ -78,6 +73,7 @@ docker-compose up
 - [React](https://reactjs.org/)
 - [Github Copilot](https://copilot.github.com/)
 - [Github Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
+- [Vercel](https://vercel.com/)
 
 ## 貢献
 
@@ -89,15 +85,9 @@ docker-compose up
 
 This project is a rule-based chatbot application built with Nextjs, and Nodejs. It uses the [RakutenMA](https://github.com/rakuten-nlp/rakutenma) library for morphological analysis of Japanese language and provides a chat interface for user interaction. The application also includes an admin page for managing the application's `Weights` data that is used to determine the importance of each word in the user's input.
 
-## Screenshots
+## Demo
 
-Here are some screenshots of the application:
-
-Home Page:
-![Home Page](https://github.com/Sherbieny/chatbotto/blob/main/sample_data/screenshots/home.png)
-
-Admin Page:
-![Admin Page](https://github.com/Sherbieny/chatbotto/blob/main/sample_data/screenshots/admin.png)
+[Chatbotto on Vercel](https://chatbotto.vercel.app/)
 
 ## Installation
 
@@ -114,7 +104,8 @@ Admin Page:
 4. Create a database locally in MongoDB or use a cloud database service such as MongoDB Atlas.
    1. Create a database named `chatbotto` and a collection named `weights`.
    2. Create a collection named `qa`
-   3. [Optional] use the json files in `sample_data` to populate the database with sample data.
+   3. Create a collection named `settings`
+   4. [Optional] use the json files in `sample_data` to populate the database with sample data.
 
 ## Running the Application
 
@@ -156,6 +147,7 @@ docker-compose up
 - [Nodejs](https://nodejs.org/en/)
 - [RakutenMA](https://github.com/rakuten-nlp/rakutenma)
 - [MongoDB](https://www.mongodb.com/)
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 - [VS Code](https://code.visualstudio.com/)
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
@@ -163,6 +155,7 @@ docker-compose up
 - [React](https://reactjs.org/)
 - [Github Copilot](https://copilot.github.com/)
 - [Github Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
+- [Vercel](https://vercel.com/)
 
 ## Contributing
 
