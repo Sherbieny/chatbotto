@@ -23,7 +23,8 @@
 4. ローカルで MongoDB のデータベースを作成するか、MongoDB Atlas などのクラウドデータベースサービスを使用します。
    1. `chatbotto`という名前のデータベースと`weights`という名前のコレクションを作成します。
    2. `qa`という名前のコレクションを作成します。
-   3. [オプション] `sample_data`の json ファイルを使用して、サンプルデータでデータベースを作成します。
+   3. `settings`という名前のコレクションを作成します (空でも構いません)。
+   4. [オプション] `sample_data`の json ファイルを使用して、サンプルデータでデータベースを作成します。
 
 ## アプリケーションの実行
 
@@ -104,7 +105,7 @@ This project is a rule-based chatbot application built with Nextjs, and Nodejs. 
 4. Create a database locally in MongoDB or use a cloud database service such as MongoDB Atlas.
    1. Create a database named `chatbotto` and a collection named `weights`.
    2. Create a collection named `qa`
-   3. Create a collection named `settings`
+   3. Create a collection named `settings`(can be empty)
    4. [Optional] use the json files in `sample_data` to populate the database with sample data.
 
 ## Running the Application
