@@ -80,7 +80,7 @@ export default function ChatWindow() {
     const fetchSuggestions = useCallback(async (tokenizer, userInput) => {
         if (!tokenizer || userInput.length <= 3) return;
         try {
-            console.log('Fetching suggestions...');
+            //console.log('Fetching suggestions...');
             setIsLoading(true);
             const tokenizedInput = tokenizer.filterTokens(tokenizer.tokenize(userInput));
             if (tokenizedInput.length === 0) {
