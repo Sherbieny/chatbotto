@@ -17,10 +17,12 @@ class Tokenizer {
             this.weights[item.key] = item.value;
         });
 
-        this.suggestionsCount = await fetch('/api/settings?action=getSettings').then(res => res.json()).then(settings => {
-            const suggestionsCountSetting = settings.find(setting => setting.key === 'suggestionsCount');
-            return suggestionsCountSetting.value || 5;
-        });
+        this.suggestionsCount = await fetch('/api/settings?action=getSettings')
+            .then(res => res.json())
+            .then(settings => {
+                const suggestionsCountSetting = settings.find(setting => setting.key === 'suggestionsCount');
+                return suggestionsCountSetting ? suggestionsCountSetting.value : 5;
+            });
     }
 
     tokenize(text) {
